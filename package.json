@@ -16,5 +16,12 @@
     "webpack": "^4.46.0",
     "webpack-cli": "^3.3.12",
     "webpack-merge": "^5.8.0"
+  },
+  "dependencies": {
+    "@ffmpeg/core": "^0.10.0",
+    "@ffmpeg/ffmpeg": "^0.10.1",
+    "file-system": "^2.2.2",
+    "fs": "0.0.1-security",
+    "ytdl-core": "^4.8.3"
   }
 }

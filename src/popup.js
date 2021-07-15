@@ -1,112 +1,94 @@
-'use strict';
-
+"use strict";
 import './popup.css';
+import ytdl from "ytdl-core";
+const audio_only_download = document.getElementById("audio_only_download");
+const video_download = document.getElementById("video_download");
+let resolution = document.getElementById("resolution_quality");
+let video_url = null;
+let audio = null;
 
-(function() {
-  // We will make use of Storage API to get and store `count` value
-  // More information on Storage API can we found at
-  // https://developer.chrome.com/extensions/storage
 
-  // To get storage access, we have to mention it in `permissions` property of manifest.json file
-  // More information on Permissions can we found at
-  // https://developer.chrome.com/extensions/declare_permissions
-  const counterStorage = {
-    get: cb => {
-      chrome.storage.sync.get(['count'], result => {
-        cb(result.count);
-      });
-    },
-    set: (value, cb) => {
-      chrome.storage.sync.set(
-        {
-          count: value,
-        },
-        () => {
-          cb();
-        }
-      );
-    },
-  };
+chrome.tabs.query(
+	{ active: true, windowId: chrome.windows.WINDOW_ID_CURRENT },
+	function (tabs) {
+		const regex = /https:\/\/www.youtube.com\/watch?/g;
+		if (tabs[0].url.match(regex)) {
+			// audio_only_download.innerText = "Download(audio only)";
+			video_download.innerText = "Download";
+			video_url = tabs[0].url;
+			console.log(video_url);
+			download_audio();
 
-  function setupCounter(initialValue = 0) {
-    document.getElementById('counter').innerHTML = initialValue;
+			// audio_only_download.addEventListener("click", download_audio);
+			video_download.addEventListener("click", download_video);
+			resolution.addEventListener("click",set_resolution)
+			ytdl.getBasicInfo(video_url).then(x=>{
+				let g = x.formats;
+				let h = g.map(x=>{
+					return x.qualityLabel;
+				})
+				let k = [...new Set(h)]
+				k.forEach(e=>{
 
-    document.getElementById('incrementBtn').addEventListener('click', () => {
-      updateCounter({
-        type: 'INCREMENT',
-      });
-    });
+					let node = document.createElement("input")
+					let label = document.createElement("label");
+					label.innerText = e;
+					node.setAttribute("type","radio")
+					node.setAttribute("value",e);
+					node.setAttribute("name", "resolution");
+					if(e==="1080p60"){
+						node.setAttribute("checked",true)
+					}
+					document.getElementById("resolution_quality").appendChild(node)
 
-    document.getElementById('decrementBtn').addEventListener('click', () => {
-      updateCounter({
-        type: 'DECREMENT',
-      });
-    });
-  }
+					document.getElementById("resolution_quality").appendChild(label)
+				})
+			document.getElementById("loader").classList.add("hide-loader");
 
-  function updateCounter({ type }) {
-    counterStorage.get(count => {
-      let newCount;
+			})
 
-      if (type === 'INCREMENT') {
-        newCount = count + 1;
-      } else if (type === 'DECREMENT') {
-        newCount = count - 1;
-      } else {
-        newCount = count;
-      }
 
-      counterStorage.set(newCount, () => {
-        document.getElementById('counter').innerHTML = newCount;
+		} else {
+			// audio_only_download.innerText = "Must be on a YouTube Video";
+		}
+	}
+);
+function set_resolution(){
+	for(var i = 0, length = resolution.length; i < length; i++)
+	if(resolution[i].checked){
+		console.log(resolution[i].value);
+	}
+}
+async function download_audio() {
+	console.log("donwloading audio");
+	let info = await ytdl.getInfo(video_url).then((y) => {
+		// console.log(y.formats[1].url);
+		console.log(y.formats);
+		// console.log(ytdl.chooseFormat(y.formats, { filter: "audioonly" }));
+		audio = ytdl.chooseFormat(y.formats, {
+			filter: (format) =>
+				format.container === "mp4" &&
+				format.hasAudio === true &&
+				format.hasVideo === false,
+		}).url;
+		console.log(audio);
+		// audio_only_download.setAttribute("href", audio);
+		// audio_only_download.setAttribute("download", "");
+	});
+}
 
-        // Communicate with content script of
-        // active tab by sending a message
-        chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-          const tab = tabs[0];
+function download_video() {
+	let query = new URLSearchParams({
+		YT_LINK : video_url,
+		resolution : null,
+		audio_only : false,
+	});
 
-          chrome.tabs.sendMessage(
-            tab.id,
-            {
-              type: 'COUNT',
-              payload: {
-                count: newCount,
-              },
-            },
-            response => {
-              console.log('Current count value passed to contentScript file');
-            }
-          );
-        });
-      });
-    });
-  }
-
-  function restoreCounter() {
-    // Restore count value
-    counterStorage.get(count => {
-      if (typeof count === 'undefined') {
-        // Set counter value as 0
-        counterStorage.set(0, () => {
-          setupCounter(0);
-        });
-      } else {
-        setupCounter(count);
-      }
-    });
-  }
-
-  document.addEventListener('DOMContentLoaded', restoreCounter);
-
-  // Communicate with background file by sending a message
-  chrome.runtime.sendMessage(
-    {
-      type: 'GREETINGS',
-      payload: {
-        message: 'Hello, my name is Pop. I am from Popup.',
-      },
-    },
-    response => {
-      console.log(response.message);
-    }
-  );
-})();
+	let request = new URL("http://localhost:5000/download")
+	request.search = query;
+	fetch(request, {
+		method: 'GET',
+		mode: 'no-cors'
+	})
+	// window.location.href = `http://localhost:5000/download?URL=${video_url}`;
+}
