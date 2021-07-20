@@ -20,8 +20,12 @@
   "dependencies": {
     "@ffmpeg/core": "^0.10.0",
     "@ffmpeg/ffmpeg": "^0.10.1",
+    "axios": "^0.21.1",
+    "file-saver": "^2.0.5",
     "file-system": "^2.2.2",
+    "fluent-ffmpeg": "^2.1.2",
     "fs": "0.0.1-security",
+    "stream": "0.0.2",
     "ytdl-core": "^4.8.3"
   }
 }
