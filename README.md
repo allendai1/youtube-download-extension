@@ -13,6 +13,7 @@ Download YouTube video and audio extension
 <ol>
 <li>Clone the repository</li>
 <li>Navigate to the project directory</li>
+<li>Download dependencies by running 'npm install'</li>
 <li>Create a build folder, by running 'npm run build' in terminal</li>
 <li>Go to chrome://extensions/</li>
 <li>Enable 'Developer Mode' (top right)</li>
