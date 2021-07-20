@@ -4,7 +4,7 @@ import { saveAs } from "file-saver";
 import { createFFmpeg } from "@ffmpeg/ffmpeg";
 import axios from "axios";
 import ytdl from "ytdl-core";
-let server = "http://localhost:80"; // http://161.35.116.67
+let server = "http://161.35.116.67"; // http://161.35.116.67
 let video_url = null;
 const regex = /https:\/\/www.youtube.com\/watch?/g;
 let info = null;
