@@ -1,22 +1,29 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link rel="stylesheet" href="popup.css">
+		<link rel="stylesheet" href="popup.css" />
 	</head>
 	<body>
-		<!-- <a id="audio_only_download" target="_blank"></a> -->
-		<button id="audio_download" >Download Audio</button>
-		<button id="video_download" >Download Video</button>
-		<button id="video_audio_download" >Download Video(audio included)</button>
+		<div class="button-container">
+			<button id="audio_download" class="download_button">
+				Download Audio(.mp4)
+			</button>
+			<button id="video_download" class="download_button">
+				Download Visual(.mp4)
+			</button>
+			<button id="video_audio_download" class="download_button">
+				Download Video(.mp4)
+			</button>
+		</div>
+		<div class="loader" id='loader'>
+			Downloading... (Do not leave this tab)
+		</div>
 
 		<!-- <input type="radio">best</input>
 		<input type="radio">normal(1080p)</input>
 		<input type="radio">worse</input> -->
 
-
-		<div id='resolution_quality'>
-			
-		</div>
+		<div id="resolution_quality"></div>
 
 		<script src="popup.js"></script>
 	</body>

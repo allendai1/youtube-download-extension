@@ -1,5 +1,5 @@
 'use strict';
-
+console.log("content")
 // Content script file will run in the context of web page.
 // With content script you can manipulate the web pages using
 // Document Object Model (DOM).
